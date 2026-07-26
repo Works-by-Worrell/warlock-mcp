@@ -3,7 +3,8 @@ import inspect
 import logging
 import os
 
-from ..core import PROJECT_ROOT, mcp
+from worksbyworrell.warlock.core import PROJECT_ROOT, mcp
+from worksbyworrell.warlock.repository import get_skill_repository
 
 logger = logging.getLogger(__name__)
 
@@ -15,12 +16,8 @@ def get_skill_path(skill_name: str) -> str:
 @mcp.resource("skill://{skill_name}")
 def get_skill_instructions(skill_name: str) -> str:
     """Returns instructions and metadata from a skill's SKILL.md file."""
-    path = get_skill_path(skill_name)
-    if not os.path.exists(path):
-        return f"Error: Skill '{skill_name}' not found."
-
-    with open(path, "r", encoding="utf-8") as f:
-        return f.read()
+    data = get_skill_repository().get_skill(skill_name)
+    return data.get("system_prompt") or ""
 
 
 def load_dynamic_skills_tools():
