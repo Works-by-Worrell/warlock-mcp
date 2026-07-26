@@ -25,11 +25,11 @@ def _merge(
     return merged
 
 
+# noinspection DuplicatedCode
 class LocalAgentRepository(AgentRepository):
     """Strategy to read agent configurations from the local filesystem."""
 
     def __init__(self, public_dir: str | None = None, private_dir: str | None = None):
-        # Allow passing directories or fall back to local config env variables
         self.public_dir = public_dir or os.environ.get("WARLOCK_CONFIG_DIR", "./.public/agents")
         self.private_dir = private_dir or os.environ.get(
             "WARLOCK_PRIVATE_CONFIG_DIR", "./.private/agents"
