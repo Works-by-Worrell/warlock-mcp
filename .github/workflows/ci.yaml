@@ -24,11 +24,7 @@ jobs:
         run: uv python install
 
       - name: Run Ruff Linter
-        run: |
-          cd python-app
-          uv run ruff check src
+        run: uv run ruff check src
 
       - name: Run Pytest Suite
-        run: |
-          cd python-app
-          uv run pytest tests/ --strict-markers
+        run: uv run pytest tests/ --strict-markers
