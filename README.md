@@ -12,20 +12,19 @@ The codebase is refactored following **Domain-Driven Design (DDD)** and architec
 warlock-mcp/
 ├── .githooks/                # Shared, version-controlled git validation hooks
 │   └── commit-msg            # Enforces Conventional Commit standards with issue tags
-├── python-app/
-│   ├── src/
-│   │   └── worksbyworrell/
-│   │       └── warlock/
-│   │           ├── main.py   # FastMCP application entry point (ASGI server bootstrap)
-│   │           ├── pipeline/ # Decoupled Ingestion Pipelines (Clean Ingress)
-│   │           ├── repository/ # DDD Data Repository Contracts & Implementations
-│   │           │   ├── agent.py
-│   │           │   ├── profile.py
-│   │           │   ├── resource.py
-│   │           │   └── skill.py
-│   │           └── service/  # Facade Pattern Business Logic Layer
-│   │               └── session.py
-│   └── tests/                # Automated pytest suites (Yellowstone-compliant)
+├── src/
+│   └── worksbyworrell/
+│       └── warlock/
+│           ├── main.py   # FastMCP application entry point (ASGI server bootstrap)
+│           ├── pipeline/ # Decoupled Ingestion Pipelines (Clean Ingress)
+│           ├── repository/ # DDD Data Repository Contracts & Implementations
+│           │   ├── agent.py
+│           │   ├── profile.py
+│           │   ├── resource.py
+│           │   └── skill.py
+│           └── service/  # Facade Pattern Business Logic Layer
+│               └── session.py
+├── tests/                # Automated pytest suites (Yellowstone-compliant)
 └── Dockerfile                # Multi-stage image build for server & CLI runner
 ```
 
@@ -51,18 +50,15 @@ The CLI module `worksbyworrell.warlock.pipeline` executes configuration seeding 
 ## 3. Local Development & Testing
 
 ### Installation
-Set up a python virtual environment and install the development dependencies:
+Set up a python virtual environment and sync the development dependencies using `uv`:
 ```bash
-cd python-app
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
+uv sync
 ```
 
 ### Running Tests
 Execute the unit testing suite to verify repository mocks and domain models:
 ```bash
-PYTHONPATH=src pytest tests/
+uv run pytest tests/
 ```
 
 ---

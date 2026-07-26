@@ -1,0 +1,9 @@
+# Warlock Core Dependencies
+mcp[cli]>=1.2.0
+python-dotenv>=1.0.0
+httpx>=0.24.0
+google-cloud-firestore>=2.11.0
+uvicorn>=0.22.0
+pyyaml>=6.0
+pytest>=7.3.0
+pytest-mock>=3.10.0
