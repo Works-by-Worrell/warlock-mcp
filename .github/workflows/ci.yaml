@@ -1,0 +1,30 @@
+name: Warlock MCP CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  ci:
+    name: Warlock Continuous Integration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Up UV
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Install Python
+        run: uv python install
+
+      - name: Run Ruff Linter
+        run: uv run ruff check src
+
+      - name: Run Pytest Suite
+        run: uv run pytest tests/ --strict-markers
