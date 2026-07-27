@@ -28,7 +28,7 @@ class ConfigIngestionPipeline:
         doc = doc_ref.get()
 
         if doc.exists:
-            existing_data = doc.to_dict()
+            existing_data = doc.to_dict() or {}
             # If MD5 hashes match, skip write
             if existing_data.get("_md5_hash") == doc_hash:
                 print(f"[{collection_name}/{doc_id}] No change detected. Skipping sync.")
