@@ -5,7 +5,6 @@ import sys
 
 from . import resources, tools
 from .core import mcp
-from .resources.skills import load_dynamic_skills_tools
 
 # Configure logging to go strictly to stderr
 logger = logging.getLogger(__name__)
@@ -53,8 +52,6 @@ def main():
         force=True,
     )
     logging.getLogger("warlock").setLevel(logging.DEBUG)
-
-    load_dynamic_skills_tools()
 
     if args.transport == "streamable-http":
         logger.info(
