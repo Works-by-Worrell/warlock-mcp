@@ -38,8 +38,8 @@ class LocalResourceRepository(ResourceRepository):
 class FirestoreResourceRepository(ResourceRepository):
     """Strategy to read resources from the local filesystem."""
 
-    def __init__(self, client: firestore.Client | None = None):
-        self.client = client or firestore.Client()
+    def __init__(self, client: firestore.Client):
+        self.client = client
 
     def get_resource(self, resource_id: str) -> Dict[str, Any]:
         """Get a resource from Firestore collection."""

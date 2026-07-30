@@ -49,8 +49,8 @@ class LocalAgentRepository(AgentRepository):
 class FirestoreAgentRepository(AgentRepository):
     """Strategy to read agent configurations from Firestore collections."""
 
-    def __init__(self, client: firestore.Client | None = None):
-        self.client = client or firestore.Client()
+    def __init__(self, client: firestore.Client):
+        self.client = client
 
     def get_agent(self, agent_id: str) -> Dict[str, Any]:
         """Get merged agent configuration from Firestore collection."""

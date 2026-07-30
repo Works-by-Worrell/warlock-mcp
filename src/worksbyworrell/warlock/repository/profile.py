@@ -47,8 +47,8 @@ class LocalUserProfileRepository(UserProfileRepository):
 class FirestoreUserProfileRepository(UserProfileRepository):
     """Strategy to read user profile configurations from Firestore collections."""
 
-    def __init__(self, client: firestore.Client | None = None):
-        self.client = client or firestore.Client()
+    def __init__(self, client: firestore.Client):
+        self.client = client
 
     def get_profile(self, username: str) -> Dict[str, Any]:
         """Get merged user profile data from Firestore."""
