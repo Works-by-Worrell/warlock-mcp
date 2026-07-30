@@ -1,6 +1,6 @@
 [project]
 name = "warlock-mcp"
-version = "0.0.2"
+version = "0.0.3"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
@@ -40,3 +40,6 @@ dev = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/worksbyworrell"]
+
+[project.scripts]
+warlock-mcp-syncer = "worksbyworrell.warlock.pipeline.cli:main"
