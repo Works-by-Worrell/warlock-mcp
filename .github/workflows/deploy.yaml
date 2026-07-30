@@ -1,0 +1,77 @@
+name: Warlock MCP Deploy Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+# Required for Workload Identity Federation OIDC token exchange
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    name: Build, Tag, and Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud via WIF
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set Up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker Login for Artifact Registry
+        run: |
+          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+
+      - name: Set Up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract Release Version from pyproject.toml
+        id: get_version
+        run: |
+          VERSION=$(grep -m 1 'version = ' pyproject.toml | cut -d '"' -f 2)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+          # Short Git SHA calculation (7 characters)
+          SHORT_SHA=$(git rev-parse --short=7 HEAD)
+          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
+
+      - name: Build and Push Server Target (warlock-mcp)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: warlock-mcp
+          push: true
+          tags: |
+            us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/wbw-global-registry/warlock-mcp:v${{ steps.get_version.outputs.version }}
+            us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/wbw-global-registry/warlock-mcp:${{ steps.get_version.outputs.short_sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and Push Syncer Target (warlock-mcp-syncer)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: warlock-mcp-syncer
+          push: true
+          tags: |
+            us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/wbw-global-registry/warlock-mcp-syncer:v${{ steps.get_version.outputs.version }}
+            us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/wbw-global-registry/warlock-mcp-syncer:${{ steps.get_version.outputs.short_sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy Server to Cloud Run Environment (NPRD)
+        run: |
+          gcloud run deploy warlock-mcp-nprd \
+            --image=us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/wbw-global-registry/warlock-mcp:${{ steps.get_version.outputs.short_sha }} \
+            --region=${{ secrets.GCP_REGION }} \
+            --platform=managed
