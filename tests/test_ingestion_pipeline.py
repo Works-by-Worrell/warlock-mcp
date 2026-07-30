@@ -1,5 +1,5 @@
 import sys
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 import pytest
 
 # Target imports (expected to fail or pass depending on file existence - RED TDD Phase)
@@ -163,3 +163,117 @@ def test_pipeline_imports_without_triggering_fastmcp():
     assert not any(m == "mcp" or "fastmcp" in m for m in loaded_mcp), (
         "FastMCP was imported during ingestion pipeline loading! Decoupling violated."
     )
+
+
+# ============================================================================
+# 4. DRY RUN & ORCHESTRATION TESTS
+# ============================================================================
+
+@pytest.mark.skipif(ConfigIngestionPipeline is None, reason="Ingestion pipeline not yet implemented.")
+def test_sync_document_dry_run_does_not_write(monkeypatch):
+    """Verify that if dry_run=True, sync_document detects a change but does not write to Firestore."""
+    monkeypatch.setenv("GITHUB_SHA", "a1b2c3d4e5f6")
+    mock_db = MagicMock()
+    
+    # Document does not exist in DB (meaning there is a delta)
+    mock_doc = MagicMock()
+    mock_doc.exists = False
+    mock_doc_ref = MagicMock()
+    mock_doc_ref.get.return_value = mock_doc
+    mock_db.collection.return_value.document.return_value = mock_doc_ref
+    
+    # Initialize pipeline with dry_run=True
+    pipeline = ConfigIngestionPipeline(db=mock_db, dry_run=True)
+    payload = {"name": "Test Agent", "system_prompt": "Test Prompt"}
+    
+    # Act
+    updated = pipeline.sync_document("agent_configurations", "test-agent", payload)
+    
+    # Assert
+    assert updated is True  # Should return True because a delta was found
+    mock_doc_ref.set.assert_not_called()  # But should NOT perform the set operation
+
+
+@pytest.mark.skipif(ConfigIngestionPipeline is None, reason="Ingestion pipeline not yet implemented.")
+@patch("worksbyworrell.warlock.pipeline.ingestion_pipeline.crawl_standard_directory")
+@patch("worksbyworrell.warlock.pipeline.ingestion_pipeline.normalize_keys")
+def test_sync_standard_directory_orchestration(mock_normalize, mock_crawl):
+    """Verify orchestration of standard directory crawling, normalization, validation, and syncing."""
+    mock_db = MagicMock()
+    pipeline = ConfigIngestionPipeline(db=mock_db)
+    
+    # Setup mocks
+    mock_crawl.return_value = {
+        "torque": {"agent-name": "Torque", "system_prompt": "You are Torque."}
+    }
+    mock_normalize.return_value = {
+        "agent_name": "Torque", "system_prompt": "You are Torque."
+    }
+    
+    mock_validator = MagicMock()
+    mock_validator.return_value = {
+        "agent_id": "torque", "name": "Torque", "system_prompt": "You are Torque."
+    }
+    
+    # Mock sync_document
+    pipeline.sync_document = MagicMock()
+    pipeline.sync_document.return_value = True
+    
+    # Act
+    updated_count = pipeline.sync_standard_directory(
+        collection_name="agent_configurations",
+        directory_path="/mock/path/agents",
+        validator_fn=mock_validator
+    )
+    
+    # Assert
+    assert updated_count == 1
+    mock_crawl.assert_called_once_with("/mock/path/agents")
+    mock_normalize.assert_called_once_with({"agent-name": "Torque", "system_prompt": "You are Torque."})
+    mock_validator.assert_called_once_with({"agent_name": "Torque", "system_prompt": "You are Torque."})
+    pipeline.sync_document.assert_called_once_with(
+        "agent_configurations", "torque", {"agent_id": "torque", "name": "Torque", "system_prompt": "You are Torque."}
+    )
+
+
+@pytest.mark.skipif(ConfigIngestionPipeline is None, reason="Ingestion pipeline not yet implemented.")
+@patch("worksbyworrell.warlock.pipeline.ingestion_pipeline.crawl_skills_directory")
+@patch("worksbyworrell.warlock.pipeline.ingestion_pipeline.normalize_keys")
+def test_sync_skills_directory_orchestration(mock_normalize, mock_crawl):
+    """Verify orchestration of skills directory crawling, normalization, validation, and syncing."""
+    mock_db = MagicMock()
+    pipeline = ConfigIngestionPipeline(db=mock_db)
+    
+    # Setup mocks
+    mock_crawl.return_value = {
+        "git-ops": {"skillName": "Git Ops", "system_prompt": "Help Git."}
+    }
+    mock_normalize.return_value = {
+        "skill_name": "Git Ops", "system_prompt": "Help Git."
+    }
+    
+    mock_validator = MagicMock()
+    mock_validator.return_value = {
+        "skill_id": "git-ops", "system_prompt": "Help Git."
+    }
+    
+    # Mock sync_document
+    pipeline.sync_document = MagicMock()
+    pipeline.sync_document.return_value = True
+    
+    # Act
+    updated_count = pipeline.sync_skills_directory(
+        collection_name="skill_metadata",
+        directory_path="/mock/path/skills",
+        validator_fn=mock_validator
+    )
+    
+    # Assert
+    assert updated_count == 1
+    mock_crawl.assert_called_once_with("/mock/path/skills")
+    mock_normalize.assert_called_once_with({"skillName": "Git Ops", "system_prompt": "Help Git."})
+    mock_validator.assert_called_once_with({"skill_name": "Git Ops", "system_prompt": "Help Git."})
+    pipeline.sync_document.assert_called_once_with(
+        "skill_metadata", "git-ops", {"skill_id": "git-ops", "system_prompt": "Help Git."}
+    )
+
