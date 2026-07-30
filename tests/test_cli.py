@@ -53,8 +53,8 @@ def test_cli_orchestration_flow(mock_firestore, mock_pipeline_class, tmp_path):
         # Act
         main()
         
-    # Assert: Firestore client was initialized with the project ID
-    mock_firestore.assert_called_once_with(project="test-project")
+    # Assert: Firestore client was initialized with the project ID and database
+    mock_firestore.assert_called_once_with(project="test-project", database="(default)")
     
     # Assert: ConfigIngestionPipeline was initialized with dry_run=False
     mock_pipeline_class.assert_called_once_with(db=mock_firestore.return_value, dry_run=False)

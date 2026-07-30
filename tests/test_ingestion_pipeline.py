@@ -230,7 +230,13 @@ def test_sync_standard_directory_orchestration(mock_normalize, mock_crawl):
     assert updated_count == 1
     mock_crawl.assert_called_once_with("/mock/path/agents")
     mock_normalize.assert_called_once_with({"agent-name": "Torque", "system_prompt": "You are Torque."})
-    mock_validator.assert_called_once_with({"agent_name": "Torque", "system_prompt": "You are Torque."})
+    mock_validator.assert_called_once_with({
+        "agent_name": "Torque", 
+        "system_prompt": "You are Torque.",
+        "agent_id": "torque",
+        "profile_id": "torque",
+        "resource_id": "torque"
+    })
     pipeline.sync_document.assert_called_once_with(
         "agent_configurations", "torque", {"agent_id": "torque", "name": "Torque", "system_prompt": "You are Torque."}
     )
@@ -272,7 +278,13 @@ def test_sync_skills_directory_orchestration(mock_normalize, mock_crawl):
     assert updated_count == 1
     mock_crawl.assert_called_once_with("/mock/path/skills")
     mock_normalize.assert_called_once_with({"skillName": "Git Ops", "system_prompt": "Help Git."})
-    mock_validator.assert_called_once_with({"skill_name": "Git Ops", "system_prompt": "Help Git."})
+    mock_validator.assert_called_once_with({
+        "skill_name": "Git Ops", 
+        "system_prompt": "Help Git.",
+        "agent_id": "git-ops",
+        "profile_id": "git-ops",
+        "resource_id": "git-ops"
+    })
     pipeline.sync_document.assert_called_once_with(
         "skill_metadata", "git-ops", {"skill_id": "git-ops", "system_prompt": "Help Git."}
     )
