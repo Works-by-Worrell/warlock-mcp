@@ -17,20 +17,41 @@ logger = logging.getLogger(__name__)
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--public-dir", required=True, help="...")
-    parser.add_argument("--private-dir", help="...")
-    parser.add_argument("--project-id", help="...")
-    parser.add_argument("--github-sha", help="...")
-    parser.add_argument("--dry-run", action="store_true", help="...")
+    parser = argparse.ArgumentParser(
+        description="GitOps Config Ingestion Syncer for Works-by-Worrell"
+    )
+    parser.add_argument(
+        "--public-dir",
+        required=True,
+        help="Absolute path to the public configuration directory (wbw-config)",
+    )
+    parser.add_argument(
+        "--private-dir",
+        help="Absolute path to the private configuration directory overlay (wbw-config-private)",
+    )
+    parser.add_argument("--project-id", help="Google Cloud Project ID for Firestore authentication")
+    parser.add_argument(
+        "--github-sha",
+        help="The short SHA of the triggering Git commit to inject as version metadata",
+    )
+    parser.add_argument(
+        "--database",
+        default="(default)",
+        help="The Firestore database name to connect to (e.g., wbw-firestore-nprd)",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Run validation without persisting changes to Firestore",
+    )
 
     logger.debug("Parsing CLI arguments")
     args = parser.parse_args()
 
     if args.project_id:
-        db = firestore.Client(project=args.project_id)
+        db = firestore.Client(project=args.project_id, database=args.database)
     else:
-        db = firestore.Client()
+        db = firestore.Client(database=args.database)
 
     if args.github_sha:
         os.environ["GITHUB_SHA"] = args.github_sha

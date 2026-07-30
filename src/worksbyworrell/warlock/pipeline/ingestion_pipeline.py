@@ -34,6 +34,12 @@ class ConfigIngestionPipeline:
 
         for doc_id, raw_doc in raw_docs.items():
             normalized_doc = normalize_keys(raw_doc)
+
+            # Dynamically inject identifiers based on the filename
+            normalized_doc["agent_id"] = doc_id
+            normalized_doc["profile_id"] = doc_id
+            normalized_doc["resource_id"] = doc_id
+
             validated_doc = validator_fn(normalized_doc)
             if self.sync_document(collection_name, doc_id, validated_doc):
                 updated_count += 1
