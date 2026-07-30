@@ -44,18 +44,3 @@ EXPOSE 8080
 ENTRYPOINT ["python", "-m", "worksbyworrell.warlock.main"]
 
 
-# Stage 3: Standalone Syncer CLI Image (warlock-mcp-syncer)
-FROM python:3.14-slim AS warlock-mcp-syncer
-
-WORKDIR /app
-
-# Copy the compiled virtual environment and source code
-COPY --from=builder /app/.venv /app/.venv
-COPY --from=builder /app/src /app/src
-
-# Set path to use virtualenv binaries by default
-ENV PATH="/app/.venv/bin:$PATH"
-ENV PYTHONUNBUFFERED=1
-
-# Default entrypoint executes the syncer CLI binary
-ENTRYPOINT ["warlock-mcp-syncer"]
