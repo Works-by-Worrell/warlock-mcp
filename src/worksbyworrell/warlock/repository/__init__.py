@@ -23,37 +23,35 @@ from worksbyworrell.warlock.repository.skill import (
 )
 
 
+def _get_firestore_client(project_id: str) -> firestore.Client:
+    database_id = os.environ.get("GCP_DATABASE_ID", "(default)")
+    # noinspection PyTypeChecker
+    return firestore.Client(project=project_id, database=database_id)
+
+
 def get_agent_repository() -> AgentRepository:
     project_id = os.environ.get("GCP_PROJECT_ID")
     if project_id:
-        # noinspection PyTypeChecker
-        client = firestore.Client(project=project_id)
-        return FirestoreAgentRepository(client)
+        return FirestoreAgentRepository(_get_firestore_client(project_id))
     return LocalAgentRepository()
 
 
 def get_profile_repository() -> UserProfileRepository:
     project_id = os.environ.get("GCP_PROJECT_ID")
     if project_id:
-        # noinspection PyTypeChecker
-        client = firestore.Client(project=project_id)
-        return FirestoreUserProfileRepository(client)
+        return FirestoreUserProfileRepository(_get_firestore_client(project_id))
     return LocalUserProfileRepository()
 
 
 def get_resource_repository() -> ResourceRepository:
     project_id = os.environ.get("GCP_PROJECT_ID")
     if project_id:
-        # noinspection PyTypeChecker
-        client = firestore.Client(project=project_id)
-        return FirestoreResourceRepository(client)
+        return FirestoreResourceRepository(_get_firestore_client(project_id))
     return LocalResourceRepository()
 
 
 def get_skill_repository() -> SkillMetadataRepository:
     project_id = os.environ.get("GCP_PROJECT_ID")
     if project_id:
-        # noinspection PyTypeChecker
-        client = firestore.Client(project=project_id)
-        return FirestoreSkillMetadataRepository(client)
+        return FirestoreSkillMetadataRepository(_get_firestore_client(project_id))
     return LocalSkillMetadataRepository()

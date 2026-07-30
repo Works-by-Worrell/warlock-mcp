@@ -31,7 +31,7 @@ class FirestoreSkillMetadataRepository(SkillMetadataRepository):
     """Strategy to read skill metadata from the Firestore database."""
 
     def __init__(self, client: firestore.Client):
-        self.client = client or firestore.Client()
+        self.client = client
 
     def get_skill(self, skill_id: str) -> Dict[str, Any]:
         """Read the skill metadata from the Firestore database."""
