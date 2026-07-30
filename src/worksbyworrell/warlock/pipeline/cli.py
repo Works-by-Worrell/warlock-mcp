@@ -22,7 +22,6 @@ def main() -> None:
     )
     parser.add_argument(
         "--public-dir",
-        required=True,
         help="Absolute path to the public configuration directory (wbw-config)",
     )
     parser.add_argument(
@@ -48,6 +47,9 @@ def main() -> None:
     logger.debug("Parsing CLI arguments")
     args = parser.parse_args()
 
+    if not args.public_dir and not args.private_dir:
+        parser.error("At least one of --public-dir or --private-dir must be specified.")
+
     if args.project_id:
         db = firestore.Client(project=args.project_id, database=args.database)
     else:
@@ -56,40 +58,41 @@ def main() -> None:
     if args.github_sha:
         os.environ["GITHUB_SHA"] = args.github_sha
 
-    public_agents_dir = os.path.join(args.public_dir, "agents")
-    public_profiles_dir = os.path.join(args.public_dir, "profiles")
-    resources_dir = os.path.join(args.public_dir, "resources")
-    skills_dir = os.path.join(args.public_dir, "skills")
-
     pipeline = ConfigIngestionPipeline(db=db, dry_run=args.dry_run)
 
-    if os.path.isdir(public_agents_dir):
-        pipeline.sync_standard_directory(
-            collection_name="agent_configurations",
-            directory_path=public_agents_dir,
-            validator_fn=validate_agent_config,
-        )
+    if args.public_dir:
+        public_agents_dir = os.path.join(args.public_dir, "agents")
+        public_profiles_dir = os.path.join(args.public_dir, "profiles")
+        resources_dir = os.path.join(args.public_dir, "resources")
+        skills_dir = os.path.join(args.public_dir, "skills")
 
-    if os.path.isdir(public_profiles_dir):
-        pipeline.sync_standard_directory(
-            collection_name="user_profiles",
-            directory_path=public_profiles_dir,
-            validator_fn=validate_user_profile,
-        )
+        if os.path.isdir(public_agents_dir):
+            pipeline.sync_standard_directory(
+                collection_name="agent_configurations",
+                directory_path=public_agents_dir,
+                validator_fn=validate_agent_config,
+            )
 
-    if os.path.isdir(resources_dir):
-        pipeline.sync_standard_directory(
-            collection_name="system_resources",
-            directory_path=resources_dir,
-            validator_fn=validate_system_resource,
-        )
+        if os.path.isdir(public_profiles_dir):
+            pipeline.sync_standard_directory(
+                collection_name="user_profiles",
+                directory_path=public_profiles_dir,
+                validator_fn=validate_user_profile,
+            )
 
-    if os.path.isdir(skills_dir):
-        pipeline.sync_skills_directory(
-            collection_name="skill_metadata",
-            directory_path=skills_dir,
-            validator_fn=validate_skill_metadata,
-        )
+        if os.path.isdir(resources_dir):
+            pipeline.sync_standard_directory(
+                collection_name="system_resources",
+                directory_path=resources_dir,
+                validator_fn=validate_system_resource,
+            )
+
+        if os.path.isdir(skills_dir):
+            pipeline.sync_skills_directory(
+                collection_name="skill_metadata",
+                directory_path=skills_dir,
+                validator_fn=validate_skill_metadata,
+            )
 
     if args.private_dir:
         private_agents_dir = os.path.join(args.private_dir, "agents")
