@@ -234,8 +234,9 @@ def test_sync_standard_directory_orchestration(mock_normalize, mock_crawl):
         "agent_name": "Torque", 
         "system_prompt": "You are Torque.",
         "agent_id": "torque",
-        "profile_id": "torque",
-        "resource_id": "torque"
+        "username": "torque",
+        "resource_id": "torque",
+        "skill_id": "torque"
     })
     pipeline.sync_document.assert_called_once_with(
         "agent_configurations", "torque", {"agent_id": "torque", "name": "Torque", "system_prompt": "You are Torque."}
@@ -282,8 +283,9 @@ def test_sync_skills_directory_orchestration(mock_normalize, mock_crawl):
         "skill_name": "Git Ops", 
         "system_prompt": "Help Git.",
         "agent_id": "git-ops",
-        "profile_id": "git-ops",
-        "resource_id": "git-ops"
+        "username": "git-ops",
+        "resource_id": "git-ops",
+        "skill_id": "git-ops"
     })
     pipeline.sync_document.assert_called_once_with(
         "skill_metadata", "git-ops", {"skill_id": "git-ops", "system_prompt": "Help Git."}
