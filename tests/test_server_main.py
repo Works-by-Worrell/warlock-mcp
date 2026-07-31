@@ -1,0 +1,54 @@
+import sys
+import pytest
+from unittest.mock import patch, MagicMock
+
+try:
+    from worksbyworrell.warlock.main import main
+except ImportError:
+    main = None
+
+def test_server_entrypoint_is_defined():
+    assert main is not None, "Server main entrypoint is not defined."
+
+@pytest.mark.skipif(main is None, reason="Server entrypoint not yet implemented.")
+@patch("worksbyworrell.warlock.main.mcp")
+def test_main_starts_with_stdio(mock_mcp):
+    """Verify that the server defaults to stdio transport."""
+    test_args = ["warlock-mcp"]
+    with patch.object(sys, "argv", test_args):
+        main()
+    mock_mcp.run.assert_called_once_with(transport="stdio")
+
+@pytest.mark.skipif(main is None, reason="Server entrypoint not yet implemented.")
+@patch("worksbyworrell.warlock.main.mcp")
+def test_main_starts_with_streamable_http(mock_mcp):
+    """Verify that the server can start with streamable-http transport."""
+    test_args = [
+        "warlock-mcp",
+        "--transport", "streamable-http",
+        "--host", "127.0.0.1",
+        "--port", "9090"
+    ]
+    with patch.object(sys, "argv", test_args):
+        main()
+    assert mock_mcp.settings.host == "127.0.0.1"
+    assert mock_mcp.settings.port == 9090
+    assert mock_mcp.settings.transport_security.enable_dns_rebinding_protection is False
+    mock_mcp.run.assert_called_once_with(transport="streamable-http")
+
+@pytest.mark.skipif(main is None, reason="Server entrypoint not yet implemented.")
+@patch("worksbyworrell.warlock.main.mcp")
+def test_main_starts_with_sse(mock_mcp):
+    """Verify that the server can start with the standard sse transport."""
+    test_args = [
+        "warlock-mcp",
+        "--transport", "sse",
+        "--host", "0.0.0.0",
+        "--port", "8080"
+    ]
+    with patch.object(sys, "argv", test_args):
+        main()
+    assert mock_mcp.settings.host == "0.0.0.0"
+    assert mock_mcp.settings.port == 8080
+    assert mock_mcp.settings.transport_security.enable_dns_rebinding_protection is False
+    mock_mcp.run.assert_called_once_with(transport="sse")
