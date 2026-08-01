@@ -49,6 +49,7 @@ async def create_youtrack_issue(
     description: str,
     tags: list[str] = None,
     priority: str = "Normal",
+    custom_fields: list[dict] = None,
 ) -> str:
     """
     Creates a new issue in YouTrack with optional tags and priority.
@@ -87,6 +88,9 @@ async def create_youtrack_issue(
             {"name": "Priority", "$type": "SingleEnumIssueCustomField", "value": {"name": priority}}
         ],
     }
+
+    if custom_fields:
+        payload["customFields"].extend(custom_fields)
 
     if resolved_tags:
         payload["tags"] = resolved_tags
@@ -198,6 +202,7 @@ async def update_youtrack_issue(
     description: str = None,
     priority: str = None,
     stage: str = None,
+    custom_fields: list[dict] = None,
 ) -> str:
     """
     Updates an existing YouTrack issue.
@@ -209,18 +214,21 @@ async def update_youtrack_issue(
     if description is not None:
         payload["description"] = description
 
-    custom_fields = []
+    custom_fields_payload = []
     if priority is not None:
-        custom_fields.append(
+        custom_fields_payload.append(
             {"name": "Priority", "$type": "SingleEnumIssueCustomField", "value": {"name": priority}}
         )
     if stage is not None:
-        custom_fields.append(
+        custom_fields_payload.append(
             {"name": "Stage", "$type": "StateIssueCustomField", "value": {"name": stage}}
         )
 
     if custom_fields:
-        payload["customFields"] = custom_fields
+        custom_fields_payload.extend(custom_fields)
+
+    if custom_fields_payload:
+        payload["customFields"] = custom_fields_payload
 
     if not payload:
         return "No updates specified"
