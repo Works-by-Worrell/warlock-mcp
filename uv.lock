@@ -949,7 +949,7 @@ wheels = [
 
 [[package]]
 name = "warlock-mcp"
-version = "0.0.8"
+version = "0.0.9"
 source = { editable = "." }
 dependencies = [
     { name = "google-cloud-firestore" },

@@ -126,7 +126,7 @@ async def search_youtrack_issues(query: str, max_results: int = 10) -> str:
     params = {
         "query": query,
         "$top": max_results,
-        "fields": "idReadable,summary,customFields(name,value(name))",
+        "fields": "idReadable,summary,customFields(name,value)",
     }
 
     try:
@@ -164,9 +164,7 @@ async def get_youtrack_issue_details(issue_id: str) -> str:
         resp = await _request(
             "GET",
             f"/api/issues/{issue_id}",
-            params={
-                "fields": "idReadable,summary,description,tags(name),customFields(name,value(name))"
-            },
+            params={"fields": "idReadable,summary,description,tags(name),customFields(name,value)"},
         )
         issue = resp.json()
 
@@ -183,12 +181,28 @@ async def get_youtrack_issue_details(issue_id: str) -> str:
         tags_list = issue.get("tags") or []
         tags_str = ", ".join(f"#{tag['name']}" for tag in tags_list) or "None"
 
+        custom_fields_strs = []
+        for cf in issue.get("customFields", []):
+            if cf["name"] not in ["Stage", "Priority"]:  # Handle standard ones separately or skip
+                if cf.get("value") is not None:
+                    # Depending on field type, value could be a dict or primitive
+                    val = cf["value"]
+                    val_str = val.get("name") if isinstance(val, dict) else str(val)
+                    custom_fields_strs.append(f"- **{cf['name']}**: {val_str}")
+
         content = [
             f"# {issue['idReadable']} - {issue['summary']}\n",
             f"- **Status**: {status}\n",
             f"- **Tags**: {tags_str}\n",
-            f"- **Description**:\n{issue.get('description', 'No description provided.')}",
         ]
+
+        if custom_fields_strs:
+            content.extend(custom_fields_strs)
+            content.append("\n")
+
+        content.append(
+            f"- **Description**:\n{issue.get('description', 'No description provided.')}"
+        )
 
         return "\n".join(content)
     except httpx.HTTPError as e:
