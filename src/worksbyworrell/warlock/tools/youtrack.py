@@ -144,8 +144,8 @@ async def search_youtrack_issues(query: str, max_results: int = 10) -> str:
                 None,
             )
             status = (
-                stage_field["value"]["name"]
-                if stage_field and stage_field.get("value")
+                stage_field.get("value", {}).get("name", "Unknown")
+                if stage_field and isinstance(stage_field.get("value"), dict)
                 else "Unknown"
             )
             content.append(f"- **{issue['idReadable']}**: {issue['summary']} [{status}]")
@@ -176,7 +176,9 @@ async def get_youtrack_issue_details(issue_id: str) -> str:
             None,
         )
         status = (
-            stage_field["value"]["name"] if stage_field and stage_field.get("value") else "Unknown"
+            stage_field.get("value", {}).get("name", "Unknown")
+            if stage_field and isinstance(stage_field.get("value"), dict)
+            else "Unknown"
         )
         tags_list = issue.get("tags") or []
         tags_str = ", ".join(f"#{tag['name']}" for tag in tags_list) or "None"
