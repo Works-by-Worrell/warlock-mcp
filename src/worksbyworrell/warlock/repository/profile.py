@@ -52,10 +52,10 @@ class FirestoreUserProfileRepository(UserProfileRepository):
 
     def get_profile(self, username: str) -> Dict[str, Any]:
         """Get merged user profile data from Firestore."""
-        public_ref = self.client.collection(USER_PROFILES).document(f"{username}.md")
+        public_ref = self.client.collection(USER_PROFILES).document(username)
         public_data = public_ref.get().to_dict() or {}
 
-        private_ref = self.client.collection(USER_PROFILE_OVERLAYS).document(f"{username}.md")
+        private_ref = self.client.collection(USER_PROFILE_OVERLAYS).document(username)
         private_data = private_ref.get().to_dict() or {}
 
         return _merge(username, public_data, private_data)
