@@ -1,10 +1,9 @@
 import os
 from typing import Any, Dict
 
-from google.cloud import firestore
-
+from worksbyworrell.warlock.repository.github import fetch_github_file
+from worksbyworrell.warlock.repository.parser import parse_content, parse_file
 from worksbyworrell.warlock.repository.base import SkillMetadataRepository
-from worksbyworrell.warlock.repository.parser import parse_file
 
 SKILL_METADATA = "skill_metadata"
 
@@ -27,18 +26,18 @@ class LocalSkillMetadataRepository(SkillMetadataRepository):
         return {"skill_id": skill_id, **data}
 
 
-class FirestoreSkillMetadataRepository(SkillMetadataRepository):
-    """Strategy to read skill metadata from the Firestore database."""
+class GithubSkillMetadataRepository(SkillMetadataRepository):
+    """Strategy to read skill metadata from GitHub API."""
 
-    def __init__(self, client: firestore.Client):
-        self.client = client
+    def __init__(self):
+        pass
 
     def get_skill(self, skill_id: str) -> Dict[str, Any]:
-        """Read the skill metadata from the Firestore database."""
-        ref = self.client.collection(SKILL_METADATA).document(skill_id).get()
-        data = ref.to_dict() or {}
+        """Read the skill metadata from the GitHub API."""
+        raw = fetch_github_file("wbw-config-private", f"skills/{skill_id}/SKILL.md")
+        data = parse_content(raw) if raw else {}
 
         if "system_prompt" not in data:
-            data["system_prompt"] = f"Error: Skill '{skill_id}' not found locally."
+            data["system_prompt"] = f"Error: Skill '{skill_id}' not found in GitHub."
 
         return {"skill_id": skill_id, **data}

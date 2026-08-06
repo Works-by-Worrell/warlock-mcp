@@ -1,10 +1,9 @@
 import os
 from typing import Any, Dict
 
-from google.cloud import firestore
-
+from worksbyworrell.warlock.repository.github import fetch_github_file
+from worksbyworrell.warlock.repository.parser import parse_content, parse_file
 from worksbyworrell.warlock.repository.base import ResourceRepository
-from worksbyworrell.warlock.repository.parser import parse_file
 
 SYSTEM_RESOURCES = "system_resources"
 
@@ -35,21 +34,21 @@ class LocalResourceRepository(ResourceRepository):
         return {"resource_id": resource_id, **data}
 
 
-class FirestoreResourceRepository(ResourceRepository):
-    """Strategy to read resources from the local filesystem."""
+class GithubResourceRepository(ResourceRepository):
+    """Strategy to read resources from GitHub API."""
 
-    def __init__(self, client: firestore.Client):
-        self.client = client
+    def __init__(self):
+        pass
 
     def get_resource(self, resource_id: str) -> Dict[str, Any]:
-        """Get a resource from Firestore collection."""
-        doc_id = resource_id.replace("/", "_")
-        ref = self.client.collection(SYSTEM_RESOURCES).document(doc_id).get()
-        data = ref.to_dict() or {}
-
-        if not ref.exists:
-            data["system_prompt"] = (
-                f"Error: Resource ID '{resource_id}' not found in Firestore collection."
-            )
-
+        """Get a resource from GitHub API."""
+        filename = LocalResourceRepository.RESOURCE_MAP.get(resource_id, f"{resource_id}.md")
+        raw = fetch_github_file("wbw-config-private", f"resources/{filename}")
+        if not raw:
+            return {
+                "resource_id": resource_id,
+                "system_prompt": f"Error: Resource ID '{resource_id}' not found in GitHub.",
+            }
+        
+        data = parse_content(raw)
         return {"resource_id": resource_id, **data}

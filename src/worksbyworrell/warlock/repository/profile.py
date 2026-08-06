@@ -1,10 +1,9 @@
 import os
 from typing import Any, Dict
 
-from google.cloud import firestore
-
+from worksbyworrell.warlock.repository.github import fetch_github_file
+from worksbyworrell.warlock.repository.parser import parse_content, parse_file
 from worksbyworrell.warlock.repository.base import UserProfileRepository
-from worksbyworrell.warlock.repository.parser import parse_file
 
 USER_PROFILES = "user_profiles"
 USER_PROFILE_OVERLAYS = "user_profile_overlays"
@@ -44,18 +43,18 @@ class LocalUserProfileRepository(UserProfileRepository):
         return _merge(username, public_data, private_data)
 
 
-class FirestoreUserProfileRepository(UserProfileRepository):
-    """Strategy to read user profile configurations from Firestore collections."""
+class GithubUserProfileRepository(UserProfileRepository):
+    """Strategy to read user profile configurations from GitHub API."""
 
-    def __init__(self, client: firestore.Client):
-        self.client = client
+    def __init__(self):
+        pass
 
     def get_profile(self, username: str) -> Dict[str, Any]:
-        """Get merged user profile data from Firestore."""
-        public_ref = self.client.collection(USER_PROFILES).document(username)
-        public_data = public_ref.get().to_dict() or {}
+        """Get merged user profile data from GitHub API."""
+        public_raw = fetch_github_file("wbw-config", f"profiles/{username}.md")
+        public_data = parse_content(public_raw) if public_raw else {}
 
-        private_ref = self.client.collection(USER_PROFILE_OVERLAYS).document(username)
-        private_data = private_ref.get().to_dict() or {}
+        private_raw = fetch_github_file("wbw-config-private", f"profiles/{username}.md")
+        private_data = parse_content(private_raw) if private_raw else {}
 
         return _merge(username, public_data, private_data)

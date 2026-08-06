@@ -1,10 +1,11 @@
 import os
 from typing import Any, Dict
 
-from google.cloud import firestore
+from worksbyworrell.warlock.repository.github import fetch_github_file
+from worksbyworrell.warlock.repository.parser import parse_content, parse_file
 
 from worksbyworrell.warlock.repository.base import AgentRepository
-from worksbyworrell.warlock.repository.parser import parse_file
+from worksbyworrell.warlock.repository.base import AgentRepository
 
 AGENT_CONFIGURATIONS = "agent_configurations"
 AGENT_OVERLAYS = "agent_overlays"
@@ -46,18 +47,18 @@ class LocalAgentRepository(AgentRepository):
         return _merge(agent_id, public_data, private_data)
 
 
-class FirestoreAgentRepository(AgentRepository):
-    """Strategy to read agent configurations from Firestore collections."""
+class GithubAgentRepository(AgentRepository):
+    """Strategy to read agent configurations from GitHub API."""
 
-    def __init__(self, client: firestore.Client):
-        self.client = client
+    def __init__(self):
+        pass
 
     def get_agent(self, agent_id: str) -> Dict[str, Any]:
-        """Get merged agent configuration from Firestore collection."""
-        public_ref = self.client.collection(AGENT_CONFIGURATIONS).document(agent_id).get()
-        public_data = public_ref.to_dict() or {}
+        """Get merged agent configuration from GitHub API."""
+        public_raw = fetch_github_file("wbw-config", f"agents/{agent_id}.md")
+        public_data = parse_content(public_raw) if public_raw else {}
 
-        private_ref = self.client.collection(AGENT_OVERLAYS).document(agent_id).get()
-        private_data = private_ref.to_dict() or {}
+        private_raw = fetch_github_file("wbw-config-private", f"agents/{agent_id}.md")
+        private_data = parse_content(private_raw) if private_raw else {}
 
         return _merge(agent_id, public_data, private_data)

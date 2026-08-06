@@ -37,3 +37,17 @@ def parse_file(file_path: str) -> Dict[str, Any]:
 
     data["system_prompt"] = body_str.strip()
     return data
+
+
+def parse_content(raw_content: str) -> Dict[str, Any]:
+    """Helper function to parse Markdown content."""
+    if not raw_content:
+        return {}
+    fm_str, body_str = extract_frontmatter_and_body(raw_content)
+
+    data = yaml.safe_load(fm_str) if fm_str else {}
+    if not isinstance(data, dict):
+        data = {}
+
+    data["system_prompt"] = body_str.strip()
+    return data
