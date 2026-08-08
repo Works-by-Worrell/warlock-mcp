@@ -73,7 +73,7 @@ def main():
                 f"Starting Warlock MCP Server in SSE Mode on http://{args.host}:{args.port}/sse"
             )
             # The SSE app mounts on /sse internally by default
-            inner_app = mcp.sse_app("/sse")
+            inner_app = mcp.sse_app()
 
         # Wrap the FastMCP inner app with a Starlette router and attach the REST fallback layer
         app = Starlette(
