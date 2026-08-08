@@ -3,7 +3,12 @@ import logging
 import os
 import sys
 
+import uvicorn
+from starlette.applications import Starlette
+from starlette.routing import Mount, Route
+
 from . import resources, tools
+from .api import get_daemon_agent
 from .core import mcp
 
 # Configure logging to go strictly to stderr
@@ -53,22 +58,37 @@ def main():
     )
     logging.getLogger("warlock").setLevel(logging.DEBUG)
 
-    if args.transport == "streamable-http":
-        logger.info(
-            f"Starting Warlock MCP Server in Streamable HTTP Mode on http://{args.host}:{args.port}/mcp"
-        )
+    if args.transport in ("streamable-http", "sse"):
         mcp.settings.host = args.host
         mcp.settings.port = int(args.port)
         mcp.settings.transport_security.enable_dns_rebinding_protection = False
-        mcp.run(transport="streamable-http")
-    elif args.transport == "sse":
-        logger.info(
-            f"Starting Warlock MCP Server in SSE Mode on http://{args.host}:{args.port}/sse"
+
+        if args.transport == "streamable-http":
+            logger.info(
+                f"Starting Warlock MCP Server in Streamable HTTP Mode on http://{args.host}:{args.port}/mcp"
+            )
+            inner_app = mcp.streamable_http_app()
+        else:
+            logger.info(
+                f"Starting Warlock MCP Server in SSE Mode on http://{args.host}:{args.port}/sse"
+            )
+            # The SSE app mounts on /sse internally by default
+            inner_app = mcp.sse_app("/sse")
+
+        # Wrap the FastMCP inner app with a Starlette router and attach the REST fallback layer
+        app = Starlette(
+            routes=[
+                Route("/api/daemon", get_daemon_agent, methods=["GET"]),
+                Mount("/", app=inner_app),
+            ]
         )
-        mcp.settings.host = args.host
-        mcp.settings.port = int(args.port)
-        mcp.settings.transport_security.enable_dns_rebinding_protection = False
-        mcp.run(transport="sse")
+
+        uvicorn.run(
+            app,
+            host=mcp.settings.host,
+            port=mcp.settings.port,
+            log_level=mcp.settings.log_level.lower(),
+        )
     else:
         logger.info("Starting Warlock MCP Server in stdio mode")
         mcp.run(transport="stdio")
