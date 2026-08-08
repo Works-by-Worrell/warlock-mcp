@@ -44,8 +44,8 @@ def test_merge_combines_and_overrides():
     
     assert merged["agent_id"] == "torque"
     assert merged["name"] == "Torque"
-    # Private should override public
-    assert merged["system_prompt"] == "Private Overlay Prompt"
+    # Prompts should be concatenated
+    assert merged["system_prompt"] == "Public Base Prompt\n\n---\n\nPrivate Overlay Prompt"
     assert merged["model"] == "gemini-1.5"
     assert merged["token"] == "sec_123"
 
@@ -91,8 +91,8 @@ def test_local_agent_repository_reads_and_merges_symmetrically(tmp_path):
     assert data["name"] == "Public Torque"
     assert data["model"] == "gemini-2.0-pro"
     assert data["api_key"] == "sec_999"
-    # Private body should take precedence
-    assert data["system_prompt"] == "Overlay prompt instructions override."
+    # Prompts should be concatenated
+    assert data["system_prompt"] == "System prompt instructions.\n\n---\n\nOverlay prompt instructions override."
 
 
 def test_local_agent_repository_missing_files_graceful_fallback(tmp_path):

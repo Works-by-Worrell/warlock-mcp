@@ -12,14 +12,25 @@ AGENT_OVERLAYS = "agent_overlays"
 def _merge(
     agent_id: str, public_data: Dict[str, Any], private_data: Dict[str, Any]
 ) -> Dict[str, Any]:
+    public_prompt = public_data.pop("system_prompt", "")
+    private_prompt = private_data.pop("system_prompt", "")
+
     merged = {
         "agent_id": agent_id,
         **public_data,
         **private_data,
     }
 
-    if "system_prompt" not in merged:
+    prompt_parts = []
+    if public_prompt:
+        prompt_parts.append(public_prompt)
+    if private_prompt:
+        prompt_parts.append(private_prompt)
+
+    if not prompt_parts:
         merged["system_prompt"] = f"Error: No configuration found for agent '{agent_id}'"
+    else:
+        merged["system_prompt"] = "\n\n---\n\n".join(prompt_parts)
 
     return merged
 
