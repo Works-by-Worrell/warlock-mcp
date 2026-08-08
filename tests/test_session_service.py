@@ -17,31 +17,27 @@ def test_build_session_prompt_compiles_correctly():
     mock_agent_repo.get_agent.return_value = {
         "agent_id": "torque",
         "name": "Torque Agent",
-        "system_prompt": "You are Torque, the orchestration agent."
+        "system_prompt": "You are Torque, the orchestration agent.",
     }
 
     mock_profile_repo.get_profile.return_value = {
         "username": "raworre",
         "role": "Lead Engineer",
         "public_prompt": "Public profile lore text.",
-        "private_prompt": "Private profile constraints text."
+        "private_prompt": "Private profile constraints text.",
     }
 
     mock_skill_repo.get_skill.return_value = {
         "skill_id": "antigravity-guide",
-        "system_prompt": "Guides the agent on using Antigravity."
+        "system_prompt": "Guides the agent on using Antigravity.",
     }
 
     # 2. Act
     service = AgentSessionService(
-        agent_repo=mock_agent_repo,
-        profile_repo=mock_profile_repo,
-        skill_repo=mock_skill_repo
+        agent_repo=mock_agent_repo, profile_repo=mock_profile_repo, skill_repo=mock_skill_repo
     )
     prompt = service.build_session_prompt(
-        agent_name="torque",
-        username="raworre",
-        skills="antigravity-guide"
+        agent_name="torque", username="raworre", skills="antigravity-guide"
     )
 
     # 3. Assert prompt content is stitched correctly
@@ -65,13 +61,11 @@ def test_build_session_prompt_handles_missing_skills():
     mock_agent_repo.get_agent.return_value = {"system_prompt": "Agent prompt"}
     mock_profile_repo.get_profile.return_value = {
         "public_prompt": "Public",
-        "private_prompt": "Private"
+        "private_prompt": "Private",
     }
 
     service = AgentSessionService(
-        agent_repo=mock_agent_repo,
-        profile_repo=mock_profile_repo,
-        skill_repo=mock_skill_repo
+        agent_repo=mock_agent_repo, profile_repo=mock_profile_repo, skill_repo=mock_skill_repo
     )
 
     # Act with empty skills string

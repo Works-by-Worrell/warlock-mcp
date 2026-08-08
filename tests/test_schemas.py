@@ -10,13 +10,14 @@ from worksbyworrell.warlock.schemas.skill import SkillMetadataSchema
 # 1. AGENT SCHEMAS TESTS
 # ============================================================================
 
+
 def test_agent_config_schema_valid():
     """Verify valid agent configurations compile cleanly."""
     data = {
         "agent_id": "torque-agent",
         "name": "Torque Orchestration Agent",
         "system_prompt": "You are Torque.",
-        "metadata": {"model": "gemini-2.0"}
+        "metadata": {"model": "gemini-2.0"},
     }
     schema = AgentConfigSchema(**data)
     assert schema.agent_id == "torque-agent"
@@ -28,7 +29,7 @@ def test_agent_config_schema_invalid_id():
     invalid_data = {
         "agent_id": "Torque_Agent!",  # Violates '^[a-z0-9-_]+$'
         "name": "Torque",
-        "system_prompt": "Prompt"
+        "system_prompt": "Prompt",
     }
     with pytest.raises(ValidationError):
         AgentConfigSchema(**invalid_data)
@@ -44,12 +45,13 @@ def test_agent_config_schema_missing_fields():
 # 2. USER PROFILE SCHEMAS TESTS
 # ============================================================================
 
+
 def test_user_profile_schema_valid():
     """Verify user profile schema compiles with valid inputs."""
     data = {
         "username": "raworre",
         "system_prompt": "Lore and alignment details.",
-        "metadata": {"role": "Lead Engineer"}
+        "metadata": {"role": "Lead Engineer"},
     }
     schema = UserProfileSchema(**data)
     assert schema.username == "raworre"
@@ -60,7 +62,7 @@ def test_user_profile_schema_invalid_username():
     """Verify username enforces alphanumeric boundaries."""
     invalid_data = {
         "username": "raworre space!",  # Invalid characters
-        "system_prompt": "Public Lore details."
+        "system_prompt": "Public Lore details.",
     }
     with pytest.raises(ValidationError):
         UserProfileSchema(**invalid_data)
@@ -70,13 +72,14 @@ def test_user_profile_schema_invalid_username():
 # 3. SKILL SCHEMAS TESTS
 # ============================================================================
 
+
 def test_skill_metadata_schema_valid():
     """Verify skill metadata parses correctly."""
     data = {
         "skill_id": "antigravity-guide",
         "name": "Antigravity Guide",
         "description": "Guides the agent on using Antigravity.",
-        "system_prompt": "Skill prompt details."
+        "system_prompt": "Skill prompt details.",
     }
     schema = SkillMetadataSchema(**data)
     assert schema.skill_id == "antigravity-guide"
@@ -85,6 +88,7 @@ def test_skill_metadata_schema_valid():
 # ============================================================================
 # 4. RESOURCE SCHEMAS TESTS
 # ============================================================================
+
 
 def test_resource_schema_valid():
     """Verify system resource schema validation."""
@@ -95,8 +99,8 @@ def test_resource_schema_valid():
         "metadata": {
             "description": "Repository definition of ready.",
             "uri": "resource://definition-of-ready",
-            "mime_type": "text/markdown"
-        }
+            "mime_type": "text/markdown",
+        },
     }
     schema = ResourceSchema(**data)
     assert schema.resource_id == "definition-of-ready"

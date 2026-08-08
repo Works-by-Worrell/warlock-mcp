@@ -49,6 +49,6 @@ class GithubResourceRepository(ResourceRepository):
                 "resource_id": resource_id,
                 "system_prompt": f"Error: Resource ID '{resource_id}' not found in GitHub.",
             }
-        
+
         data = parse_content(raw)
         return {"resource_id": resource_id, **data}

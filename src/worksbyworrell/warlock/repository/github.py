@@ -12,7 +12,7 @@ def fetch_github_file(repo: str, path: str) -> Optional[str]:
     headers = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github.v3.raw",
-        "X-GitHub-Api-Version": "2022-11-28"
+        "X-GitHub-Api-Version": "2022-11-28",
     }
     with httpx.Client() as client:
         try:

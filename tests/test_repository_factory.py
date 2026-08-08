@@ -19,10 +19,8 @@ from worksbyworrell.warlock.repository.skill import (
 def test_factory_resolves_local_when_gcp_project_absent(monkeypatch):
     """Verify resolvers default to local strategies when GCP_PROJECT_ID is not set."""
     monkeypatch.delenv("GCP_PROJECT_ID", raising=False)
-    
+
     assert isinstance(get_agent_repository(), LocalAgentRepository)
     assert isinstance(get_profile_repository(), LocalUserProfileRepository)
     assert isinstance(get_resource_repository(), LocalResourceRepository)
     assert isinstance(get_skill_repository(), LocalSkillMetadataRepository)
-
-

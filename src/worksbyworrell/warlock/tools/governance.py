@@ -34,10 +34,10 @@ async def fetch_user_profile(profile_name: str) -> str:
         profile_data = get_profile_repository().get_profile(profile_name)
         public_prompt = profile_data.get("public_prompt", "")
         private_prompt = profile_data.get("private_prompt", "")
-        
+
         if not public_prompt and not private_prompt:
             return f"Error: No configuration found for profile '{profile_name}'"
-            
+
         return f"{public_prompt}\n\n{private_prompt}".strip()
     except Exception as e:
         logger.error(f"Failed to fetch profile '{profile_name}': {e}")
