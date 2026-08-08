@@ -1,10 +1,13 @@
+
 import pytest
-from unittest.mock import patch
 
 # We import the functions to test (these will initially fail to import during Red-TDD)
 try:
+    from worksbyworrell.warlock.pipeline.crawler import (
+        crawl_skills_directory,
+        crawl_standard_directory,
+    )
     from worksbyworrell.warlock.pipeline.normalizer import normalize_keys
-    from worksbyworrell.warlock.pipeline.crawler import crawl_standard_directory, crawl_skills_directory
 except ImportError:
     normalize_keys = None
     crawl_standard_directory = None

@@ -1,5 +1,6 @@
 import sys
 from unittest.mock import MagicMock, patch
+
 import pytest
 
 # Target imports (expected to fail or pass depending on file existence - RED TDD Phase)

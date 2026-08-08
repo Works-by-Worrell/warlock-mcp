@@ -1,5 +1,6 @@
 import sys
-from unittest.mock import MagicMock, patch, ANY
+from unittest.mock import ANY, MagicMock, patch
+
 import pytest
 
 # We import the CLI entrypoint (this will initially fail to import during Red-TDD)

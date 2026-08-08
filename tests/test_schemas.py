@@ -1,11 +1,10 @@
 import pytest
 from pydantic import ValidationError
 
-from worksbyworrell.warlock.schemas.agent import AgentConfigSchema, AgentOverlaySchema
+from worksbyworrell.warlock.schemas.agent import AgentConfigSchema
 from worksbyworrell.warlock.schemas.profile import UserProfileSchema
 from worksbyworrell.warlock.schemas.resource import ResourceSchema
 from worksbyworrell.warlock.schemas.skill import SkillMetadataSchema
-
 
 # ============================================================================
 # 1. AGENT SCHEMAS TESTS

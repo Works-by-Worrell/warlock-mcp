@@ -1,6 +1,7 @@
 import sys
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 
 try:
     from worksbyworrell.warlock.main import main

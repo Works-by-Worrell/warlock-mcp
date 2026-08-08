@@ -1,16 +1,14 @@
 from unittest.mock import MagicMock
-import pytest
 
 # Target resources modules under test
-from worksbyworrell.warlock.resources.agents import get_agent_persona, agent_session
+from worksbyworrell.warlock.resources.agents import agent_session, get_agent_persona
+from worksbyworrell.warlock.resources.definitions import get_definition_of_ready
 from worksbyworrell.warlock.resources.profiles import (
-    get_public_profile,
+    get_combined_profile,
     get_private_profile,
-    get_combined_profile
+    get_public_profile,
 )
 from worksbyworrell.warlock.resources.skills import get_skill_instructions
-from worksbyworrell.warlock.resources.definitions import get_definition_of_ready
-
 
 # ============================================================================
 # 1. AGENTS RESOURCES INTEGRATION TESTS

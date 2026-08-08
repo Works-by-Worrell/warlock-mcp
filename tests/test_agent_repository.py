@@ -1,11 +1,9 @@
-import os
 from unittest.mock import MagicMock
-import pytest
 
 from worksbyworrell.warlock.repository.agent import (
-    LocalAgentRepository,
     FirestoreAgentRepository,
-    _merge
+    LocalAgentRepository,
+    _merge,
 )
 from worksbyworrell.warlock.repository.parser import extract_frontmatter_and_body
 

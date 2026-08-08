@@ -1,11 +1,9 @@
-import os
 from unittest.mock import MagicMock
-import pytest
 
 # We expect these imports to fail initially (Red TDD phase)
 from worksbyworrell.warlock.repository.resource import (
+    FirestoreResourceRepository,
     LocalResourceRepository,
-    FirestoreResourceRepository
 )
 
 # ============================================================================

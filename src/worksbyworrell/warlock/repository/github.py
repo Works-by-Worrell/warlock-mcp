@@ -1,6 +1,8 @@
 import os
-import httpx
 from typing import Optional
+
+import httpx
+
 
 def fetch_github_file(repo: str, path: str) -> Optional[str]:
     token = os.getenv("GITHUB_TOKEN")

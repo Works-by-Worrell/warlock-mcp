@@ -1,15 +1,22 @@
-import os
-import pytest
 from worksbyworrell.warlock.repository import (
     get_agent_repository,
     get_profile_repository,
     get_resource_repository,
-    get_skill_repository
+    get_skill_repository,
 )
-from worksbyworrell.warlock.repository.agent import LocalAgentRepository, FirestoreAgentRepository
-from worksbyworrell.warlock.repository.profile import LocalUserProfileRepository, FirestoreUserProfileRepository
-from worksbyworrell.warlock.repository.resource import LocalResourceRepository, FirestoreResourceRepository
-from worksbyworrell.warlock.repository.skill import LocalSkillMetadataRepository, FirestoreSkillMetadataRepository
+from worksbyworrell.warlock.repository.agent import FirestoreAgentRepository, LocalAgentRepository
+from worksbyworrell.warlock.repository.profile import (
+    FirestoreUserProfileRepository,
+    LocalUserProfileRepository,
+)
+from worksbyworrell.warlock.repository.resource import (
+    FirestoreResourceRepository,
+    LocalResourceRepository,
+)
+from worksbyworrell.warlock.repository.skill import (
+    FirestoreSkillMetadataRepository,
+    LocalSkillMetadataRepository,
+)
 
 
 def test_factory_resolves_local_when_gcp_project_absent(monkeypatch):

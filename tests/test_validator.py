@@ -1,4 +1,5 @@
 import logging
+
 import pytest
 from pydantic import ValidationError
 
@@ -7,9 +8,9 @@ try:
     from worksbyworrell.warlock.pipeline.validator import (
         validate_agent_config,
         validate_agent_overlay,
-        validate_user_profile,
-        validate_system_resource,
         validate_skill_metadata,
+        validate_system_resource,
+        validate_user_profile,
     )
 except ImportError:
     validate_agent_config = None

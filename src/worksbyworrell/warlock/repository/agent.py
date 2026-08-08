@@ -1,11 +1,9 @@
 import os
 from typing import Any, Dict
 
+from worksbyworrell.warlock.repository.base import AgentRepository
 from worksbyworrell.warlock.repository.github import fetch_github_file
 from worksbyworrell.warlock.repository.parser import parse_content, parse_file
-
-from worksbyworrell.warlock.repository.base import AgentRepository
-from worksbyworrell.warlock.repository.base import AgentRepository
 
 AGENT_CONFIGURATIONS = "agent_configurations"
 AGENT_OVERLAYS = "agent_overlays"

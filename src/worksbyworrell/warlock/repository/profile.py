@@ -1,9 +1,9 @@
 import os
 from typing import Any, Dict
 
+from worksbyworrell.warlock.repository.base import UserProfileRepository
 from worksbyworrell.warlock.repository.github import fetch_github_file
 from worksbyworrell.warlock.repository.parser import parse_content, parse_file
-from worksbyworrell.warlock.repository.base import UserProfileRepository
 
 USER_PROFILES = "user_profiles"
 USER_PROFILE_OVERLAYS = "user_profile_overlays"

@@ -1,9 +1,9 @@
 import os
 from typing import Any, Dict
 
+from worksbyworrell.warlock.repository.base import ResourceRepository
 from worksbyworrell.warlock.repository.github import fetch_github_file
 from worksbyworrell.warlock.repository.parser import parse_content, parse_file
-from worksbyworrell.warlock.repository.base import ResourceRepository
 
 SYSTEM_RESOURCES = "system_resources"
 
