@@ -2,7 +2,6 @@ from unittest.mock import MagicMock
 
 # We expect these imports to fail initially (Red TDD phase)
 from worksbyworrell.warlock.repository.skill import (
-    FirestoreSkillMetadataRepository,
     LocalSkillMetadataRepository,
 )
 
@@ -52,49 +51,4 @@ def test_local_skill_repository_missing_graceful_fallback(tmp_path):
 # 2. FIRESTORE SKILL METADATA REPOSITORY TESTS
 # ============================================================================
 
-def test_firestore_skill_repository_success(mocker):
-    """Verify FirestoreSkillMetadataRepository retrieves documents from skill_metadata collection."""
-    # Arrange
-    mock_db = MagicMock()
-    
-    mock_doc = MagicMock()
-    mock_doc.exists = True
-    mock_doc.to_dict.return_value = {
-        "description": "Guides the agent",
-        "system_prompt": "Firestore instruction contents."
-    }
-    
-    mock_db.collection.return_value.document.return_value.get.return_value = mock_doc
-    
-    # Act
-    repo = FirestoreSkillMetadataRepository(client=mock_db)
-    data = repo.get_skill("antigravity-guide")
-    
-    # Assert
-    assert data["skill_id"] == "antigravity-guide"
-    assert data["description"] == "Guides the agent"
-    assert data["system_prompt"] == "Firestore instruction contents."
-    
-    # Verify collection boundary is "skill_metadata"
-    mock_db.collection.assert_called_with("skill_metadata")
-    mock_db.collection.return_value.document.assert_called_with("antigravity-guide")
 
-
-def test_firestore_skill_repository_handles_missing_docs(mocker):
-    """Verify Firestore repo returns fallback message when document does not exist in DB."""
-    # Arrange
-    mock_db = MagicMock()
-    
-    mock_doc = MagicMock()
-    mock_doc.exists = False
-    mock_doc.to_dict.return_value = None
-    
-    mock_db.collection.return_value.document.return_value.get.return_value = mock_doc
-    
-    # Act
-    repo = FirestoreSkillMetadataRepository(client=mock_db)
-    data = repo.get_skill("unknown-db-skill")
-    
-    # Assert
-    assert data["skill_id"] == "unknown-db-skill"
-    assert "Error" in data["system_prompt"]

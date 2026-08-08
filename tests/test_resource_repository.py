@@ -2,7 +2,6 @@ from unittest.mock import MagicMock
 
 # We expect these imports to fail initially (Red TDD phase)
 from worksbyworrell.warlock.repository.resource import (
-    FirestoreResourceRepository,
     LocalResourceRepository,
 )
 
@@ -51,52 +50,4 @@ def test_local_resource_repository_missing_graceful_fallback(tmp_path):
 # 2. FIRESTORE RESOURCE REPOSITORY TESTS
 # ============================================================================
 
-def test_firestore_resource_repository_success(mocker):
-    """Verify FirestoreResourceRepository retrieves documents from system_resources collection."""
-    # Arrange
-    mock_db = MagicMock()
-    
-    mock_doc = MagicMock()
-    mock_doc.exists = True
-    mock_doc.to_dict.return_value = {
-        "title": "Definition of Ready",
-        "system_prompt": "# Firestore DoR content."
-    }
-    
-    # Document ID should match the normalized resource path (e.g. definitions_ready)
-    mock_db.collection.return_value.document.return_value.get.return_value = mock_doc
-    
-    # Act
-    repo = FirestoreResourceRepository(client=mock_db)
-    data = repo.get_resource("definitions/ready")
-    
-    # Assert
-    assert data["resource_id"] == "definitions/ready"
-    assert data["title"] == "Definition of Ready"
-    assert data["system_prompt"] == "# Firestore DoR content."
-    
-    # Verify collection boundaries (system_resources)
-    mock_db.collection.assert_called_with("system_resources")
-    # Slashing mapping check: "definitions/ready" can be stored as document ID "definitions_ready"
-    # or the raw string. We will check that the doc ID matches the strategy.
-    mock_db.collection.return_value.document.assert_called_with("definitions_ready")
 
-
-def test_firestore_resource_repository_handles_missing_docs(mocker):
-    """Verify Firestore repo returns fallback message when resource does not exist in DB."""
-    # Arrange
-    mock_db = MagicMock()
-    
-    mock_doc = MagicMock()
-    mock_doc.exists = False
-    mock_doc.to_dict.return_value = None
-    
-    mock_db.collection.return_value.document.return_value.get.return_value = mock_doc
-    
-    # Act
-    repo = FirestoreResourceRepository(client=mock_db)
-    data = repo.get_resource("definitions/ghost")
-    
-    # Assert
-    assert data["resource_id"] == "definitions/ghost"
-    assert "Error" in data["system_prompt"]

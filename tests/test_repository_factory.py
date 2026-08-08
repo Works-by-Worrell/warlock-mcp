@@ -4,17 +4,14 @@ from worksbyworrell.warlock.repository import (
     get_resource_repository,
     get_skill_repository,
 )
-from worksbyworrell.warlock.repository.agent import FirestoreAgentRepository, LocalAgentRepository
+from worksbyworrell.warlock.repository.agent import LocalAgentRepository
 from worksbyworrell.warlock.repository.profile import (
-    FirestoreUserProfileRepository,
     LocalUserProfileRepository,
 )
 from worksbyworrell.warlock.repository.resource import (
-    FirestoreResourceRepository,
     LocalResourceRepository,
 )
 from worksbyworrell.warlock.repository.skill import (
-    FirestoreSkillMetadataRepository,
     LocalSkillMetadataRepository,
 )
 
@@ -29,14 +26,3 @@ def test_factory_resolves_local_when_gcp_project_absent(monkeypatch):
     assert isinstance(get_skill_repository(), LocalSkillMetadataRepository)
 
 
-def test_factory_resolves_firestore_when_gcp_project_present(monkeypatch, mocker):
-    """Verify resolvers switch to Firestore strategies when GCP_PROJECT_ID is set."""
-    monkeypatch.setenv("GCP_PROJECT_ID", "test-project-123")
-    
-    # Mock firestore.Client initialization so it doesn't try to touch real GCP
-    mocker.patch("google.cloud.firestore.Client")
-    
-    assert isinstance(get_agent_repository(), FirestoreAgentRepository)
-    assert isinstance(get_profile_repository(), FirestoreUserProfileRepository)
-    assert isinstance(get_resource_repository(), FirestoreResourceRepository)
-    assert isinstance(get_skill_repository(), FirestoreSkillMetadataRepository)

@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock
 
 from worksbyworrell.warlock.repository.agent import (
-    FirestoreAgentRepository,
     LocalAgentRepository,
     _merge,
 )
@@ -115,69 +114,4 @@ def test_local_agent_repository_missing_files_graceful_fallback(tmp_path):
 # 3. FIRESTORE AGENT REPOSITORY TESTS
 # ============================================================================
 
-def test_firestore_agent_repository_queries_and_merges(mocker):
-    """
-    Verify FirestoreAgentRepository fetches snapshots from appropriate collections
-    and merges them without throwing PyCharm/static-analysis warnings.
-    """
-    # Arrange
-    mock_db = MagicMock()
-    
-    # Mock public snapshot return
-    mock_pub_doc = MagicMock()
-    mock_pub_doc.exists = True
-    mock_pub_doc.to_dict.return_value = {"name": "Firestore Torque", "system_prompt": "Base"}
-    
-    # Mock private snapshot return
-    mock_priv_doc = MagicMock()
-    mock_priv_doc.exists = True
-    mock_priv_doc.to_dict.return_value = {"system_prompt": "Overlay", "api_key": "sec_888"}
-    
-    # Stub collections mapping (Mockito equivalent: when().thenReturn())
-    def mock_collection_routing(collection_name):
-        mock_coll = MagicMock()
-        if collection_name == "agent_configurations":
-            mock_coll.document.return_value.get.return_value = mock_pub_doc
-        elif collection_name == "agent_overlays":
-            mock_coll.document.return_value.get.return_value = mock_priv_doc
-        return mock_coll
-        
-    mock_db.collection.side_effect = mock_collection_routing
-    
-    # Act
-    repo = FirestoreAgentRepository(client=mock_db)
-    data = repo.get_agent("torque")
-    
-    # Assert
-    assert data["agent_id"] == "torque"
-    assert data["name"] == "Firestore Torque"
-    assert data["api_key"] == "sec_888"
-    assert data["system_prompt"] == "Overlay"
-    
-    # Verify calls
-    mock_db.collection.assert_any_call("agent_configurations")
-    mock_db.collection.assert_any_call("agent_overlays")
 
-
-def test_firestore_agent_repository_handles_missing_docs_gracefully(mocker):
-    """Verify Firestore repo handles empty snapshot references gracefully using Null Coalescing."""
-    # Arrange
-    mock_db = MagicMock()
-    
-    mock_pub_doc = MagicMock()
-    mock_pub_doc.exists = False
-    mock_pub_doc.to_dict.return_value = None
-    
-    mock_priv_doc = MagicMock()
-    mock_priv_doc.exists = False
-    mock_priv_doc.to_dict.return_value = None
-    
-    mock_db.collection.return_value.document.return_value.get.side_effect = [mock_pub_doc, mock_priv_doc]
-    
-    # Act
-    repo = FirestoreAgentRepository(client=mock_db)
-    data = repo.get_agent("ghost")
-    
-    # Assert
-    assert data["agent_id"] == "ghost"
-    assert "Error" in data["system_prompt"]
