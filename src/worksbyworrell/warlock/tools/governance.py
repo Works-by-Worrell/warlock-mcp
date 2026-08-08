@@ -1,7 +1,4 @@
 import logging
-import os
-
-import httpx
 
 from worksbyworrell.warlock.repository import get_agent_repository, get_profile_repository
 

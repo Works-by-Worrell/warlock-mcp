@@ -1,4 +1,3 @@
-from unittest.mock import MagicMock
 
 # We expect these imports to fail initially (Red TDD phase)
 from worksbyworrell.warlock.repository.profile import (

@@ -1,4 +1,3 @@
-from unittest.mock import MagicMock
 
 from worksbyworrell.warlock.repository.agent import (
     LocalAgentRepository,
