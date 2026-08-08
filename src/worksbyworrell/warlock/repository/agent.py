@@ -27,10 +27,18 @@ def _merge(
     if private_prompt:
         prompt_parts.append(private_prompt)
 
+    import yaml
+    
     if not prompt_parts:
         merged["system_prompt"] = f"Error: No configuration found for agent '{agent_id}'"
     else:
-        merged["system_prompt"] = "\n\n---\n\n".join(prompt_parts)
+        body_str = "\n\n---\n\n".join(prompt_parts)
+        fm_dict = {k: v for k, v in merged.items() if k != "system_prompt"}
+        if fm_dict:
+            fm_str = yaml.dump(fm_dict, sort_keys=False).strip()
+            merged["system_prompt"] = f"---\n{fm_str}\n---\n\n{body_str}"
+        else:
+            merged["system_prompt"] = body_str
 
     return merged
 

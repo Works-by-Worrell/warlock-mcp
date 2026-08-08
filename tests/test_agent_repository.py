@@ -40,7 +40,10 @@ def test_merge_combines_and_overrides():
     assert merged["agent_id"] == "torque"
     assert merged["name"] == "Torque"
     # Prompts should be concatenated
-    assert merged["system_prompt"] == "Public Base Prompt\n\n---\n\nPrivate Overlay Prompt"
+    assert merged["system_prompt"] == (
+        "---\nagent_id: torque\nname: Torque\nmodel: gemini-1.5\ntoken: sec_123\n---\n\n"
+        "Public Base Prompt\n\n---\n\nPrivate Overlay Prompt"
+    )
     assert merged["model"] == "gemini-1.5"
     assert merged["token"] == "sec_123"
 
@@ -79,9 +82,9 @@ def test_local_agent_repository_reads_and_merges_symmetrically(tmp_path):
     assert data["model"] == "gemini-2.0-pro"
     assert data["api_key"] == "sec_999"
     # Prompts should be concatenated
-    assert (
-        data["system_prompt"]
-        == "System prompt instructions.\n\n---\n\nOverlay prompt instructions override."
+    assert data["system_prompt"] == (
+        "---\nagent_id: torque\nname: Public Torque\nmodel: gemini-2.0-pro\napi_key: sec_999\n---\n\n"
+        "System prompt instructions.\n\n---\n\nOverlay prompt instructions override."
     )
 
 
