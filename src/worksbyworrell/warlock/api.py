@@ -1,6 +1,5 @@
 import logging
 
-import httpx
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
@@ -14,20 +13,9 @@ async def get_daemon_agent(request: Request):
     Lightweight REST fallback endpoint to retrieve the Daemon agent definition.
     Bypasses MCP layers and uses the extraction repository directly.
     """
-    auth_header = request.headers.get("Authorization")
-    if not auth_header or not auth_header.startswith("Bearer "):
-        logger.warning("Missing or invalid Authorization header in /api/daemon fallback")
-        return JSONResponse({"error": "Missing or invalid Authorization header"}, status_code=401)
-
-    token = auth_header.split(" ", 1)[1]
-
-    # Manually validate GCP Identity token via tokeninfo endpoint
-    async with httpx.AsyncClient() as client:
-        response = await client.get(f"https://oauth2.googleapis.com/tokeninfo?id_token={token}")
-        if response.status_code != 200:
-            logger.error(f"GCP token validation failed: {response.text}")
-            return JSONResponse({"error": "Invalid GCP Identity token"}, status_code=401)
-
+    # In production (Cloud Run), the Authorization header is consumed and stripped by GCP IAM
+    # before reaching the container. Therefore, reaching this handler implies the request is
+    # already authenticated natively by Cloud Run.
     # Default to fetching 'daemon' if no specific agent was provided in the query string
     agent_name = request.query_params.get("agent_name", "daemon")
 
