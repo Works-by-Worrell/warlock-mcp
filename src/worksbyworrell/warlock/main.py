@@ -72,15 +72,16 @@ def main():
             logger.info(
                 f"Starting Warlock MCP Server in SSE Mode on http://{args.host}:{args.port}/sse"
             )
-            # We mount the SSE app without a prefix because Starlette's Mount 
-            # will handle the /sse prefix
+            # sse_app() registers /sse and /messages internally.
+            # We must mount at "/" so Starlette does not strip the /sse prefix
+            # before the inner app receives the request.
             inner_app = mcp.sse_app()
 
-        # Wrap the FastMCP inner app with a Starlette router and attach the REST fallback layer
+        # /api/daemon is declared first so it takes priority over the catch-all mount.
         app = Starlette(
             routes=[
                 Route("/api/daemon", get_daemon_agent, methods=["GET"]),
-                Mount("/sse", app=inner_app),
+                Mount("/", app=inner_app),
             ]
         )
 
