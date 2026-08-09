@@ -83,7 +83,8 @@ def test_local_agent_repository_reads_and_merges_symmetrically(tmp_path):
     assert data["api_key"] == "sec_999"
     # Prompts should be concatenated
     assert data["system_prompt"] == (
-        "---\nagent_id: torque\nname: Public Torque\nmodel: gemini-2.0-pro\napi_key: sec_999\n---\n\n"
+        "---\nagent_id: torque\nname: Public Torque\n"
+        "model: gemini-2.0-pro\napi_key: sec_999\n---\n\n"
         "System prompt instructions.\n\n---\n\nOverlay prompt instructions override."
     )
 
