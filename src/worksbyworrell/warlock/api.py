@@ -1,7 +1,7 @@
 import logging
 
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 
 from worksbyworrell.warlock.repository import get_agent_repository
 
@@ -21,11 +21,12 @@ async def get_daemon_agent(request: Request):
 
     try:
         agent_data = get_agent_repository().get_agent(agent_name)
-        if not agent_data:
+        system_prompt = agent_data.get("system_prompt", "") if agent_data else ""
+        if not system_prompt or system_prompt.startswith("Error:"):
             return JSONResponse(
                 {"error": f"Agent '{agent_name}' not found"}, status_code=404
             )
-        return JSONResponse(agent_data)
+        return Response(system_prompt, media_type="text/markdown")
     except Exception as e:
         logger.error(f"Failed to fetch agent '{agent_name}' in fallback API: {e}")
         return JSONResponse({"error": str(e)}, status_code=500)
