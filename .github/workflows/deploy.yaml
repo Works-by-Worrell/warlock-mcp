@@ -2,8 +2,8 @@ name: Warlock MCP Publish Pipeline
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*.*.*'
 
 permissions:
   contents: read
