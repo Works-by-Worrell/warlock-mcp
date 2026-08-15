@@ -1,71 +1,68 @@
-# Works-by-Worrell: Warlock MCP Application Core (`warlock-mcp`)
+# Works-by-Worrell: Warlock MCP Core (`warlock-mcp`)
 
-This repository houses the core application logic, domain models, and ingestion pipelines for **Warlock**, a specialized Model Context Protocol (MCP) server built on top of the FastMCP Python framework.
+This repository houses the core application logic and domain models for **Warlock**, a specialized Model Context Protocol (MCP) server built on top of the FastMCP Python framework. 
+
+Warlock acts as the **Universal Cognitive Bootstrapper** for the Works-by-Worrell ecosystem. It bridges the gap between public execution tools (agents, IDEs) and the private GitOps data layer (prompts, rules, schemas) without requiring centralized cloud infrastructure.
 
 ---
 
-## 1. System Architecture & Design Patterns
+## 1. System Architecture: The Local Gateway
 
-The codebase is refactored following **Domain-Driven Design (DDD)** and architectural decoupling patterns to isolate dependencies and support flexible environments:
+Following the serverless extrication strategy ([ADR 0007](https://github.com/Works-by-Worrell/wbw-architecture/tree/main/initiatives/0007-local-mcp-extrication)), Warlock MCP is designed to run exclusively as a **decentralized, local edge-execution process**.
 
-```
-warlock-mcp/
-├── .githooks/                # Shared, version-controlled git validation hooks
-│   └── commit-msg            # Enforces Conventional Commit standards with issue tags
-├── src/
-│   └── worksbyworrell/
-│       └── warlock/
-│           ├── main.py   # FastMCP application entry point (ASGI server bootstrap)
-│           ├── pipeline/ # Decoupled Ingestion Pipelines (Clean Ingress)
-│           ├── repository/ # DDD Data Repository Contracts & Implementations
-│           │   ├── agent.py
-│           │   ├── profile.py
-│           │   ├── resource.py
-│           │   └── skill.py
-│           └── service/  # Facade Pattern Business Logic Layer
-│               └── session.py
-├── tests/                # Automated pytest suites (Yellowstone-compliant)
-└── Dockerfile                # Multi-stage image build for server & CLI runner
-```
+It exposes a standardized MCP interface over `stdio`, allowing any compliant client (e.g., Cursor, Claude Desktop, Antigravity CLI, or autonomous scripts like Eldritch Harvester) to seamlessly fetch organizational context and execute proprietary tools.
 
 ### Core Design Patterns
-*   **Domain-Driven Design (DDD) Repositories:** All data access is mediated by specific repository interfaces (`AgentRepository`, `UserProfileRepository`, etc.). This separates business logic from data storage mechanisms.
-*   **Strategy Pattern (Storage Resolution):** The repositories support both a `Firestore` backend (using Google Cloud Firestore API) and a `Local` backend (utilizing local JSON/markdown files). Storage strategy resolution is bound strictly to the `GCP_PROJECT_ID` environment variable. If unset, it cleanly falls back to local strategies.
-*   **Facade Pattern (Service Layer):** The `AgentSessionService` injects multiple repositories to orchestrate session creation, prompt tokenization, and metadata assembly under a unified interface (`agent_session()`).
-*   **Pipeline Pattern (Framework Isolation):** The `ConfigIngestionPipeline` handles synchronization of public and private configurations to the database. It is completely isolated from the FastMCP runtime engine, allowing independent imports and zero-dependency command line executions.
+*   **Domain-Driven Design (DDD):** All data access is mediated by specific repository interfaces (`AgentRepository`, `UserProfileRepository`, etc.).
+*   **API-Driven State:** Warlock fetches organizational configuration dynamically. By providing a `GITHUB_API_KEY`, Warlock natively queries the private GitOps config repositories via REST, entirely eliminating the need for Firestore or complex database syncing pipelines.
+*   **Frictionless Transport:** By defaulting to `stdio`, Warlock integrates directly into IDEs as a subprocess, requiring no open ports, persistent HTTP servers, or complex network routing.
 
 ---
 
-## 2. Config Sync CLI & Ingestion Pipeline
+## 2. Containerized Execution (Frictionless Onboarding)
 
-The CLI module `worksbyworrell.warlock.pipeline` executes configuration seeding and synchronizations.
+To enforce strict immutability and eliminate Python environment setup (`uv`/`venv`), the Warlock MCP Server is distributed as a public Docker container via the GitHub Container Registry (GHCR).
 
-### Key Ingestion Features
-*   **Zero-Dependency Execution:** Ingestion helper libraries do not import FastMCP, ensuring lightweight CLI executions.
-*   **MD5 Delta-Syncing:** Calculates MD5 checksums of local config files and applies updates to Firestore only when data has drifted, saving database writes.
-*   **Strict Traceability:** Ingests document properties alongside their Git `$GITHUB_SHA` hash as a version flag for configuration auditing.
+### Running Warlock MCP Locally
+You can boot Warlock instantly from any machine with Docker installed:
+
+```bash
+docker run -i --rm \
+  --env-file ~/.wbw/.env \
+  ghcr.io/works-by-worrell/warlock-mcp:latest \
+  --transport stdio
+```
+
+*Note: The `-i` (interactive) flag is required so standard I/O streams pass through correctly to the FastMCP server.*
 
 ---
 
-## 3. Local Development & Testing
+## 3. Local Development
+
+If you are actively developing new tools or resources for Warlock, you can run it natively using `uv`:
 
 ### Installation
-Set up a python virtual environment and sync the development dependencies using `uv`:
+Set up a python virtual environment and sync the development dependencies:
 ```bash
 uv sync
 ```
 
 ### Running Tests
-Execute the unit testing suite to verify repository mocks and domain models:
+Execute the unit testing suite:
 ```bash
 uv run pytest tests/
 ```
 
+### Local CLI Execution
+```bash
+uv run python -m worksbyworrell.warlock.main --transport stdio
+```
+
 ---
 
-## 4. CI/CD Build & Container Packaging
+## 4. CI/CD Publishing Pipeline
 
-The build pipeline publishes two specialized container images utilizing **double-tagging** (pinning every release to both a semantic version and a Git short-SHA):
+The build pipeline automatically packages and publishes the `warlock-mcp` container image to **GHCR** on every push to the `main` branch. 
 
-1.  **`warlock-mcp` (ASGI Server runtime):** Serves FastMCP actions over the Streamable-HTTP ASGI transport.
-2.  **`warlock-mcp-syncer` (Sync CLI client):** Standalone container runner that mounts configuration directories and runs sync commands in GitOps workflows.
+*   Images are double-tagged with both the semantic version from `pyproject.toml` and the Git short-SHA.
+*   The legacy Google Artifact Registry and Cloud Run deployments have been fully deprecated and removed from the pipeline.
