@@ -10,9 +10,10 @@ logger = logging.getLogger(__name__)
 
 async def _request(method: str, path: str, **kwargs) -> httpx.Response:
     """
-    Centralized HTTP executor for YouTrack REST calls.
-    Handles dynamic env sourcing, headers injection, URL parsing, and HTTP requests.
+    Centralized HTTP executor for YouTrack REST calls with 429 backoff retries.
     """
+    import asyncio
+
     base_url = os.getenv("YOUTRACK_URL")
     token = os.getenv("YOUTRACK_TOKEN")
     headers = {
@@ -23,10 +24,18 @@ async def _request(method: str, path: str, **kwargs) -> httpx.Response:
     url = f"{base_url.rstrip('/')}/{path.lstrip('/')}"
 
     async with httpx.AsyncClient() as client:
-        resp = await client.request(method, url, headers=headers, **kwargs)
-        # Raise HTTPError for bad statuses (4xx, 5xx) so tools can catch them cleanly
-        resp.raise_for_status()
-        return resp
+        MAX_RETRIES = 3
+        for attempt in range(1, MAX_RETRIES + 1):
+            resp = await client.request(method, url, headers=headers, **kwargs)
+            if resp.status_code == 429 and attempt < MAX_RETRIES:
+                wait_sec = attempt * 3
+                logger.warning(
+                    f"YouTrack 429 Rate Limit. Retrying in {wait_sec}s ({attempt}/{MAX_RETRIES})..."
+                )
+                await asyncio.sleep(wait_sec)
+                continue
+            resp.raise_for_status()
+            return resp
 
 
 def _handle_error(e: httpx.HTTPError) -> str:
