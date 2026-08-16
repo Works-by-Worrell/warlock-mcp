@@ -14,8 +14,8 @@ async def _request(method: str, path: str, **kwargs) -> httpx.Response:
     """
     import asyncio
 
-    base_url = os.getenv("YOUTRACK_URL")
-    token = os.getenv("YOUTRACK_TOKEN")
+    base_url = os.getenv("YOUTRACK_URL", "").strip("\"'")
+    token = os.getenv("YOUTRACK_TOKEN", "").strip("\"'")
     headers = {
         "Authorization": f"Bearer {token}",
         **kwargs.pop("headers", {}),
