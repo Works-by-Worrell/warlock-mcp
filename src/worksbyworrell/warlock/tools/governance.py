@@ -1,6 +1,6 @@
 import logging
 
-from worksbyworrell.warlock.repository import get_agent_repository, get_profile_repository
+from worksbyworrell.core.repository import get_agent_repository, get_profile_repository
 
 from ..core import mcp
 

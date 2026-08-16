@@ -1,17 +1,17 @@
-from worksbyworrell.warlock.repository import (
+from worksbyworrell.core.repository import (
     get_agent_repository,
     get_profile_repository,
     get_resource_repository,
     get_skill_repository,
 )
-from worksbyworrell.warlock.repository.agent import LocalAgentRepository
-from worksbyworrell.warlock.repository.profile import (
-    LocalUserProfileRepository,
+from worksbyworrell.core.repository.agent import LocalAgentRepository
+from worksbyworrell.core.repository.profile import (
+    CombinedProfileRepository,
 )
-from worksbyworrell.warlock.repository.resource import (
-    LocalResourceRepository,
+from worksbyworrell.core.repository.resource import (
+    LocalDefinitionRepository,
 )
-from worksbyworrell.warlock.repository.skill import (
+from worksbyworrell.core.repository.skill import (
     LocalSkillMetadataRepository,
 )
 

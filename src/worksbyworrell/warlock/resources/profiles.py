@@ -1,5 +1,5 @@
 from worksbyworrell.warlock.core import mcp, profile_uri
-from worksbyworrell.warlock.repository import get_profile_repository
+from worksbyworrell.core.repository import get_profile_repository
 
 
 @mcp.resource(profile_uri("public"))

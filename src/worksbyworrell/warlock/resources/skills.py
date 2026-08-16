@@ -1,5 +1,5 @@
 from worksbyworrell.warlock.core import mcp
-from worksbyworrell.warlock.repository import get_skill_repository
+from worksbyworrell.core.repository import get_skill_repository
 
 
 @mcp.resource("skill://{skill_name}")

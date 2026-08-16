@@ -1,5 +1,5 @@
 # We expect these imports to fail initially (Red TDD phase)
-from worksbyworrell.warlock.repository.resource import (
+from worksbyworrell.core.repository.resource import (
     LocalResourceRepository,
 )
 

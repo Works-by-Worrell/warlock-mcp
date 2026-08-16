@@ -1,4 +1,4 @@
-from worksbyworrell.warlock.repository.base import (
+from worksbyworrell.core.repository.base import (
     AgentRepository,
     SkillMetadataRepository,
     UserProfileRepository,

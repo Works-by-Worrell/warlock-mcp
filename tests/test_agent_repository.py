@@ -1,8 +1,8 @@
-from worksbyworrell.warlock.repository.agent import (
+from worksbyworrell.core.repository.agent import (
+    AgentMetadata,
     LocalAgentRepository,
-    _merge,
 )
-from worksbyworrell.warlock.repository.parser import extract_frontmatter_and_body
+from worksbyworrell.core.repository.parser import extract_frontmatter_and_body
 
 # ============================================================================
 # 1. PURE HELPER METHOD TESTS

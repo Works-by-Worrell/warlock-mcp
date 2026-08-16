@@ -1,7 +1,7 @@
 import yaml
 
 from worksbyworrell.warlock.core import mcp
-from worksbyworrell.warlock.repository import (
+from worksbyworrell.core.repository import (
     get_agent_repository,
     get_profile_repository,
     get_skill_repository,
