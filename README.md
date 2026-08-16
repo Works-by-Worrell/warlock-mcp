@@ -35,6 +35,9 @@ docker run -i --rm \
 
 *Note: The `-i` (interactive) flag is required so standard I/O streams pass through correctly to the FastMCP server.*
 
+> [!WARNING]
+> **Windows/WSL Users:** You must have Docker Desktop running on your Windows host, and you must explicitly enable **WSL Integration** for your specific Linux distro (`Settings > Resources > WSL Integration > [x] Ubuntu`). If Docker is not running or integrated, the MCP connection will crash parsing the Docker error string.
+
 ---
 
 ## 3. Local Development
