@@ -785,7 +785,7 @@ dev = [
 [[package]]
 name = "worksbyworrell-core"
 version = "0.1.0"
-source = { git = "https://github.com/Works-by-Worrell/worksbyworrell-core.git#30ab9a9d61174e44d200c79ab8659c8d1ca235c9" }
+source = { git = "https://github.com/Works-by-Worrell/worksbyworrell-core.git#5f80a2b6d6833de0b9546cd3d4600d5b243b20ca" }
 dependencies = [
     { name = "httpx" },
     { name = "pyyaml" },
