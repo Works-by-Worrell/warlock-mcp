@@ -5,7 +5,7 @@ description = "A localized, decentralized, and serverless MCP implementation."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "worksbyworrell-core @ git+https://github.com/Works-by-Worrell/worksbyworrell-core.git",
+    "worksbyworrell-core>=0.1.2",
     "httpx>=0.28.1",
     "mcp[cli]>=1.27.2",
     "protobuf>=7.35.1",

@@ -745,7 +745,7 @@ wheels = [
 
 [[package]]
 name = "warlock-mcp"
-version = "1.0.3"
+version = "1.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },
@@ -772,7 +772,7 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.2.2" },
     { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "uvicorn", specifier = ">=0.48.0" },
-    { name = "worksbyworrell-core", git = "https://github.com/Works-by-Worrell/worksbyworrell-core.git" },
+    { name = "worksbyworrell-core", specifier = ">=0.1.2" },
 ]
 
 [package.metadata.requires-dev]
@@ -784,9 +784,13 @@ dev = [
 
 [[package]]
 name = "worksbyworrell-core"
-version = "0.1.0"
-source = { git = "https://github.com/Works-by-Worrell/worksbyworrell-core.git#5f80a2b6d6833de0b9546cd3d4600d5b243b20ca" }
+version = "0.1.2"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
     { name = "pyyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/01/a7/ec50168cc6ee697b12b5c9d71fe5c898f0e462e952b2a96375646bc1c4f0/worksbyworrell_core-0.1.2.tar.gz", hash = "sha256:181c525abedb3c8b720fb243c74b0f5703d5f86670366becb796b5064331443c", size = 8547, upload-time = "2026-08-16T05:24:19.331Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f3/08/2573bbbfdea86ec0bcf23a29fd3064ceceb34bf5eaa9fd24230158b17cd6/worksbyworrell_core-0.1.2-py3-none-any.whl", hash = "sha256:f39f9a0dcf80aab4d332f49e433ffb73fdc9ddae213f3509386d62c432a23840", size = 7963, upload-time = "2026-08-16T05:24:18.249Z" },
 ]
