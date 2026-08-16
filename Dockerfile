@@ -9,6 +9,9 @@ WORKDIR /app
 # Enable bytecode compilation
 ENV UV_COMPILE_BYTECODE=1
 
+# Install git for git+https dependencies
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
 # Copy only the files needed for dependency installation to leverage Docker cache layers
 COPY pyproject.toml uv.lock ./
 
