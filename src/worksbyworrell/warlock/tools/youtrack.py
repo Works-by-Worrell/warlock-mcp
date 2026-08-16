@@ -90,7 +90,7 @@ async def create_youtrack_issue(
             logger.warning(f"Failed to resolve tags: {e}")
 
     payload = {
-        "project": {"shortName": os.getenv("YOUTRACK_PROJECT_KEY")},
+        "project": {"shortName": os.getenv("YOUTRACK_PROJECT_KEY", "EXFIL").strip("\"'")},
         "summary": summary,
         "description": description,
         "customFields": [
