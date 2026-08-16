@@ -22,28 +22,24 @@ from worksbyworrell.warlock.repository.skill import (
 
 
 def get_agent_repository() -> AgentRepository:
-    project_id = os.environ.get("GCP_PROJECT_ID")
-    if project_id:
+    if os.environ.get("GITHUB_TOKEN"):
         return GithubAgentRepository()
     return LocalAgentRepository()
 
 
 def get_profile_repository() -> UserProfileRepository:
-    project_id = os.environ.get("GCP_PROJECT_ID")
-    if project_id:
+    if os.environ.get("GITHUB_TOKEN"):
         return GithubUserProfileRepository()
     return LocalUserProfileRepository()
 
 
 def get_resource_repository() -> ResourceRepository:
-    project_id = os.environ.get("GCP_PROJECT_ID")
-    if project_id:
+    if os.environ.get("GITHUB_TOKEN"):
         return GithubResourceRepository()
     return LocalResourceRepository()
 
 
 def get_skill_repository() -> SkillMetadataRepository:
-    project_id = os.environ.get("GCP_PROJECT_ID")
-    if project_id:
+    if os.environ.get("GITHUB_TOKEN"):
         return GithubSkillMetadataRepository()
     return LocalSkillMetadataRepository()
