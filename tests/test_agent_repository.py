@@ -1,6 +1,6 @@
 from worksbyworrell.core.repository.agent import (
-    AgentMetadata,
-    LocalAgentRepository,
+    _merge,
+        LocalAgentRepository,
 )
 from worksbyworrell.core.repository.parser import extract_frontmatter_and_body
 

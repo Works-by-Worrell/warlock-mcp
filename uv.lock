@@ -745,7 +745,7 @@ wheels = [
 
 [[package]]
 name = "warlock-mcp"
-version = "0.0.10"
+version = "1.0.3"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },
@@ -754,6 +754,7 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "pyyaml" },
     { name = "uvicorn" },
+    { name = "worksbyworrell-core" },
 ]
 
 [package.dev-dependencies]
@@ -771,6 +772,7 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.2.2" },
     { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "uvicorn", specifier = ">=0.48.0" },
+    { name = "worksbyworrell-core", git = "https://github.com/Works-by-Worrell/worksbyworrell-core.git" },
 ]
 
 [package.metadata.requires-dev]
@@ -778,4 +780,13 @@ dev = [
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-mock", specifier = ">=3.15.1" },
     { name = "ruff", specifier = ">=0.15.22" },
+]
+
+[[package]]
+name = "worksbyworrell-core"
+version = "0.1.0"
+source = { git = "https://github.com/Works-by-Worrell/worksbyworrell-core.git#30ab9a9d61174e44d200c79ab8659c8d1ca235c9" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pyyaml" },
 ]
