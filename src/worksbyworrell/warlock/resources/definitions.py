@@ -1,5 +1,6 @@
-from worksbyworrell.warlock.core import mcp, resource_uri
 from worksbyworrell.core.repository import get_resource_repository
+
+from worksbyworrell.warlock.core import mcp, resource_uri
 
 
 @mcp.resource(resource_uri("definitions/ready"))

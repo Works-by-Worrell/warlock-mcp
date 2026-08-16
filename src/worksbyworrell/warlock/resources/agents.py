@@ -1,11 +1,11 @@
 import yaml
-
-from worksbyworrell.warlock.core import mcp
 from worksbyworrell.core.repository import (
     get_agent_repository,
     get_profile_repository,
     get_skill_repository,
 )
+
+from worksbyworrell.warlock.core import mcp
 from worksbyworrell.warlock.service.session_service import AgentSessionService
 
 session_service = AgentSessionService(

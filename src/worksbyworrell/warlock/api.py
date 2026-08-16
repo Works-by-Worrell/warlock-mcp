@@ -2,7 +2,6 @@ import logging
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
-
 from worksbyworrell.core.repository import get_agent_repository
 
 logger = logging.getLogger(__name__)
